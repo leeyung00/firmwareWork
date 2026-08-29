@@ -1,0 +1,12 @@
+Disk /dev/sda: 238.47 GiB, 256060514304 bytes, 500118192 sectors
+Disk model: SAMSUNG MZNTY256
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disklabel type: gpt
+Disk identifier: D392E8B7-49AF-401C-BEC5-F7426B4FCC53
+
+Device       Start       End   Sectors   Size Type
+/dev/sda1     2048   2203647   2201600     1G EFI System
+/dev/sda2  2203648   6397951   4194304     2G Linux filesystem
+/dev/sda3  6397952 500115455 493717504 235.4G Linux filesystem
