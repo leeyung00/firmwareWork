@@ -1,6 +1,13 @@
+# [ 검사식을 통해 /sys/firmware/efi 디렉토리가 존재하는 지 확인할 수 있다.
+# 해당 검사가 옳으면 0 아니면 1을 반환하며 0이면 && 뒤의 명령어가 1이면 || 뒤의 명령어가 실행된다.
+# 현재 장치는 UEFI 방식으로 부팅되었기에 0을 반환하고 &&뒤의 echo UEFI가 실행되었다.
 [ -d /sys/firmware/efi ] && echo UEFI || echo BIOS
 UEFI
 
+# 해당 장비의 바이오스에 대한 명세서와 같은 내용이다.
+# (int)와 같이 인터럽트를 발생시키는 내용은 레거시 환경에서 남아 있던 내용이기에 무시해도 된다.
+# 눈여겨 볼 부분은 PCI나 UEFI가 지원된다는 내용이다. 
+# 만약 해당 내용이 없다면 UEFI 부팅이 지원이 안되기에 레거시 바이오스로 부팅을 해야하기 때문이다.
 sudo dmidecode -t bios
 # dmidecode 3.6
 Getting SMBIOS data from sysfs.
@@ -43,7 +50,9 @@ BIOS Language Information
 		en-US
 	Currently Installed Language: en-US
 
-
+# BootOrder를 통해 OS의 부팅 순서를 파악 할 수 있다.
+# BootCurrent를 통해 내가 현재 사용하는 OS를 확인 할 수 있다.
+# 추가로 학습한 결과 BootOrder의 순서를 바꾸거나 BootNext를 통해 다음 부팅시 OS를 선택 할 수 있다.
 efibootmgr -v
 BootCurrent: 0000
 Timeout: 0 seconds
