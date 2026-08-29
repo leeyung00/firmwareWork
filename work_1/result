@@ -1,13 +1,14 @@
 # [ 검사식을 통해 /sys/firmware/efi 디렉토리가 존재하는 지 확인할 수 있다.
-# 해당 검사가 옳으면 0 아니면 1을 반환하며 0이면 && 뒤의 명령어가 1이면 || 뒤의 명령어가 실행된다.
+# 해당 검사 종료코드는 참이면 0 아니면 1을 반환하며 0이면 && 뒤의 명령어가 1이면 || 뒤의 명령어가 실행된다.
 # 현재 장치는 UEFI 방식으로 부팅되었기에 0을 반환하고 &&뒤의 echo UEFI가 실행되었다.
 [ -d /sys/firmware/efi ] && echo UEFI || echo BIOS
 UEFI
 
 # 해당 장비의 바이오스에 대한 명세서와 같은 내용이다.
 # (int)와 같이 인터럽트를 발생시키는 내용은 레거시 환경에서 남아 있던 내용이기에 무시해도 된다.
-# 눈여겨 볼 부분은 PCI나 UEFI가 지원된다는 내용이다. 
-# 만약 해당 내용이 없다면 UEFI 부팅이 지원이 안되기에 레거시 바이오스로 부팅을 해야하기 때문이다.
+# 눈여겨 볼 부분은 UEFI가 지원된다는 내용이다.
+# 그렇기에 해당 장비는 레거시와 UEFI 방식중 둘 중 하나를 선택하여 부팅을 진행할 수 있다. 
+# 해당 내용이 없다면 레거시 바이오스로만 부팅을 할 수 있다.
 sudo dmidecode -t bios
 # dmidecode 3.6
 Getting SMBIOS data from sysfs.
@@ -102,3 +103,37 @@ Boot0021* ATA HDD	VenMsg(bc7838d2-0f82-4d60-8316-c068ee79d25b,91af625956449f41a7
       dp: 03 0a 24 00 d2 38 78 bc 82 0f 60 4d 83 16 c0 68 ee 79 d2 5b 91 af 62 59 56 44 9f 41 a7 b9 1f 4f 89 2a b0 f6 / 7f ff 04 00
 Boot0022* ATAPI CD	VenMsg(bc7838d2-0f82-4d60-8316-c068ee79d25b,aea2090adfde214e8b3a5e471856a354)
       dp: 03 0a 24 00 d2 38 78 bc 82 0f 60 4d 83 16 c0 68 ee 79 d2 5b ae a2 09 0a df de 21 4e 8b 3a 5e 47 18 56 a3 54 / 7f ff 04 00
+
+# Boot0001(Windows), Boot0002(proxmox)의 PARTUUID를 lsblk 결과와 대조해 보았다.
+# 해당 파티션이 존재하지 않아 NVRAM에 남은 유령 엔트리임을 확인하였다.
+# 부트 엔트리는 디스크가 아닌 메인보드 NVRAM에 저장되므로 파티션을 지워도 남는다는 사실까지 학습할 수 있었다.
+lee@lee:~/Desktop/firmwarWork/work_1$ lsblk -o NAME,SIZE,FSTYPE,UUID,PARTUUID,MOUNTPOINTS
+NAME   SIZE FSTYPE UUID                                   PARTUUID                             MOUNTPOINTS
+loop0
+         4K squash                                                                             /snap/bare/5
+loop1
+      66.8M squash                                                                             /snap/core24/1643
+loop2
+     261.1M squash                                                                             /snap/firefox/8803
+loop3
+     614.5M squash                                                                             /snap/gnome-46-2404/164
+loop4
+      91.7M squash                                                                             /snap/gtk-common-themes/1535
+loop5
+       402M squash                                                                             /snap/mesa-2404/1839
+loop6
+      50.1M squash                                                                             /snap/snapd/27710
+loop7
+     221.1M squash                                                                             /snap/thunderbird/1228
+loop8
+     107.5M squash                                                                             /snap/todoist/1359
+sda  238.5G                                                                                    
+├─sda1
+│        1G vfat   441A-C80C                              f29a9d32-1f73-4917-baff-69e0f2824cd1 /boot/efi
+├─sda2
+│        2G ext4   bed51645-b358-4350-b1fb-1699b66da8b1   0ed6a37a-b508-4afc-a16e-6927b5ba043e /boot
+└─sda3
+  │  235.4G LVM2_m vwqxZC-d7WE-F8iy-g3tU-Tf7l-DOV7-kL3CmM bb482214-a7e3-4bd5-b6a8-da618d11629c 
+  └─ubuntu--vg-ubuntu--lv
+       100G ext4   c010b6fe-3c39-4091-88e3-2902859c6782                                        /
+sdb      0B      
