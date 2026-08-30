@@ -1,3 +1,6 @@
+# fdisk 명령어를 통해 /dev/sda의 테이블 조회
+# 섹터수와 그에 따른 각 파일의 사이즈를 알 수 있다.
+sudo fdisk -l /dev/sda
 Disk /dev/sda: 238.47 GiB, 256060514304 bytes, 500118192 sectors
 Disk model: SAMSUNG MZNTY256
 Units: sectors of 1 * 512 = 512 bytes
@@ -10,3 +13,13 @@ Device       Start       End   Sectors   Size Type
 /dev/sda1     2048   2203647   2201600     1G EFI System
 /dev/sda2  2203648   6397951   4194304     2G Linux filesystem
 /dev/sda3  6397952 500115455 493717504 235.4G Linux filesystem
+
+
+sudo dd if=/dev/sda bs=512 count=1 2>/dev/null | xxd | tail -6
+
+000001a0: 0000 0000 0000 0000 0000 0000 0000 0000  ................
+000001b0: 0000 0000 0000 0000 0000 0000 0000 0000  ................
+000001c0: 0200 eeff ffff 0100 0000 af32 cf1d 0000  ...........2....
+000001d0: 0000 0000 0000 0000 0000 0000 0000 0000  ................
+000001e0: 0000 0000 0000 0000 0000 0000 0000 0000  ................
+000001f0: 0000 0000 0000 0000 0000 0000 0000 55aa  ..............U.
